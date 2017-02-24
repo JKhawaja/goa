@@ -19,12 +19,8 @@ func NewDecoder(r io.Reader) goa.ResettableDecoder {
 func (d Decoder) Decode(dst interface{}) error {
 
 	br := bufio.NewReader(d.r)
-	var wr io.Writer
-	_, err := br.WriteTo(wr)
-	if err != nil {
-		return err
-	}
-	_, err = wr.Write(dst.([]byte))
+
+	_, err := br.Read(dst.([]byte))
 	if err != nil {
 		return err
 	}
