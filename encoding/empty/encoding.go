@@ -7,22 +7,24 @@ import (
 	"github.com/goadesign/goa"
 )
 
-type ResettableDecoder struct {
-	D Decoder
-}
-
 type Decoder struct {
 	r io.Reader
 }
 
 func NewDecoder(r io.Reader) goa.ResettableDecoder {
-	return ResettableDecoder{D.r: r}
+
+	return Decoder{r}
 }
 
-func (d *Decoder) Decode(dst interface{}) error {
+func (d Decoder) Decode(dst interface{}) error {
 
 	br := bufio.NewReader(d.r)
-	_, err := br.WriteTo(dst)
+	var wr io.Writer
+	_, err := br.WriteTo(wr)
+	if err != nil {
+		return err
+	}
+	_, err = wr.Write(dst.([]byte))
 	if err != nil {
 		return err
 	}
@@ -30,9 +32,9 @@ func (d *Decoder) Decode(dst interface{}) error {
 	return nil
 }
 
-func (d *ResettableDecoder) Reset(r io.Reader) {
+func (d Decoder) Reset(r io.Reader) {
 
-	d.D.r = r
+	d.r = r
 
 	return
 }
